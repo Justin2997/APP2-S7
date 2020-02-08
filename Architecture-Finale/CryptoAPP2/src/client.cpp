@@ -18,7 +18,7 @@ using namespace std;
 #define PORT 5555
 
 int main(int argc, char *argv[]) {
-    
+
   int fd;
   struct sockaddr_in server;
   struct hostent *hp;
@@ -51,12 +51,12 @@ int main(int argc, char *argv[]) {
     cout<<"Error connecting\n";
     return 0;
   }
-  
+
   cout<<"Connection has been made\n";
   int rec;
 
   int to;
-  to=creat("OverusedJokeRecu.mp4",0777);
+  to = creat("OverusedJokeRecu.mp4",0777);
   if(to<0){
     cout<<"Error creating destination file\n";
     return 0;
@@ -72,12 +72,14 @@ int main(int argc, char *argv[]) {
     w=write(to,buf,rec);
   }
   high_resolution_clock::time_point t3 = high_resolution_clock::now();
-  decrypt(/*PARAMETRE EVENTUEL A CHANGER*/);
+
+  decrypt(to);
+
   high_resolution_clock::time_point t4 = high_resolution_clock::now();
   high_resolution_clock::time_point t2 = high_resolution_clock::now();
   long long duration = duration_cast<milliseconds>( t2 - t1 ).count();
   long long duration2 = duration_cast<milliseconds>( t4 - t3 ).count();
-  cout << "Temps de decryption : " << duration2 << " ms" << endl;     
+  cout << "Temps de decryption : " << duration2 << " ms" << endl;
   cout << "Temps total decryption et transmission : " << duration << " ms" << endl;
 
   close(fd);
