@@ -1,0 +1,16 @@
+
+#Remplacement de gcc par alpine
+FROM alpine
+
+#Installation des outils gcc, make, g++ et lib-dev via apk 
+RUN apk --update add gcc make g++ zlib-dev
+
+#Installation de la librairie crypto++
+COPY ./cryptopp-clean/cryptopp /cryptopp/
+WORKDIR /cryptopp
+RUN export CXXFLAGS="-DNDEBUG -g2 -O2 -DCRYPTOPP_DATA_DIR='\"/cryptopp/\"'"
+RUN make -j 4
+RUN make install PREFIX=/usr/local
+
+
+

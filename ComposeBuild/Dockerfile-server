@@ -1,0 +1,3 @@
+FROM app2secu
+WORKDIR /server
+CMD ./server
