@@ -25,7 +25,7 @@ using namespace std;
 int authentification(int socket){
   int s;
 	char buf[1024];
-  s = write(socket,buf,sizeof(buf)-1));
+  s = write(socket,buf, sizeof(buf)-1);
   if(s < 0){
     cout<<"error sending\n";
     return -1;
@@ -73,7 +73,7 @@ int main(int argc, char *argv[]) {
 
   //Authentification null de connaissance client
   printf("Authentification to the server\n");
-  authentification(fd)
+  authentification(fd);
 
   int to;
   to = creat("OverusedJokeRecu.mp4",0777);

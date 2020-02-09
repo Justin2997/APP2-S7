@@ -8,8 +8,8 @@
 using namespace CryptoPP;
 using namespace std;
 
-//Remplacez ici le code source de cette fonction par le code de votre méthode
-//servant à encrypter le fichier. Celle ci devra encrypter "OverusedJoke.mp4" dans un fichier avec le même nom.
+// Remplacez ici le code source de cette fonction par le code de votre méthode
+// servant à encrypter le fichier. Celle ci devra encrypter "OverusedJoke.mp4" dans un fichier avec le même nom.
 void encrypt (int from) {
 
 	// Read the file (https://www.thinkage.ca/gcos/expl/c/lib/read.html and https://www.ibm.com/support/knowledgecenter/en/SSLTBW_2.4.0/com.ibm.zos.v2r4.bpxbd00/rtrea.htm)
