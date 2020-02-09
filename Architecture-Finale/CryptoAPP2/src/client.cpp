@@ -16,6 +16,22 @@ using namespace std::chrono;
 using namespace std;
 
 #define PORT 5555
+#define AUTH_P 11
+#define AUTH_Q 13
+#define AUTH_N 143
+#define AUTH_S 38
+#define AUTH_R 70
+
+int authentification(int socket){
+  int s;
+	char buf[1024];
+  s = write(socket,buf,sizeof(buf)-1));
+  if(s < 0){
+    cout<<"error sending\n";
+    return -1;
+  }
+  return 0;
+}
 
 int main(int argc, char *argv[]) {
 
@@ -42,10 +58,10 @@ int main(int argc, char *argv[]) {
 
   cout<<"Socket created\n";
 
-  hp=gethostbyname(argv[1]);
+  hp = gethostbyname(argv[1]);
   bcopy((char *)hp->h_addr,(char *)&server.sin_addr.s_addr,hp->h_length);
 
-  cnct=connect(fd,(struct sockaddr*)&server,sizeof(server));
+  cnct = connect(fd,(struct sockaddr*)&server,sizeof(server));
 
   if(cnct<0){
     cout<<"Error connecting\n";
@@ -54,6 +70,10 @@ int main(int argc, char *argv[]) {
 
   cout<<"Connection has been made\n";
   int rec;
+
+  //Authentification null de connaissance client
+  printf("Authentification to the server\n");
+  authentification(fd)
 
   int to;
   to = creat("OverusedJokeRecu.mp4",0777);

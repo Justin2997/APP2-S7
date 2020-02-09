@@ -17,8 +17,8 @@ using namespace std;
 #define BACKLOG 5
 
 int main(){
-
-  int fd1,fd2;
+  int n=1;
+  int fd1,fd2, s;
   int bnd,lstn;
   char buf[1000]={' '};
   struct sockaddr_in server,client;
@@ -49,10 +49,16 @@ int main(){
 
   socklen_t len=sizeof(client);
 
-  fd2=accept(fd1,(struct sockaddr*)&client,&len);
+  fd2 = accept(fd1,(struct sockaddr*)&client,&len);
   if(fd2<0){
     cout<<"Error accepting\n";
     return 0;
+  }
+
+  //Authentification null de connaissance serveur
+  printf("Authentification of the client\n");
+  while((n = read(fd2, buf, sizeof(buf))) != 0){
+    printf("Message: \n<%s>\n", buf);
   }
 
   int from;
@@ -62,14 +68,11 @@ int main(){
 	cout<<"Error opening file\n";
     return 0;
   }
-  int n=1;
-  int s;
 
   high_resolution_clock::time_point t1 = high_resolution_clock::now();
   high_resolution_clock::time_point t3 = high_resolution_clock::now();
 
-  encrypt(from);
-  close(from);
+  encrypt(from); // Ici il faut changer from directement dans le fichier pour être envouer dans le socket
 
   high_resolution_clock::time_point t4 = high_resolution_clock::now();
   while((n=read(from,buf,sizeof(buf)))!=0){
@@ -83,6 +86,7 @@ int main(){
   cout << "Temps d'encryption : " << duration2 << " ms" << endl;
   cout << "Temps total encryption et transmission : " << duration << " ms" << endl;
 
+  close(from);
   close(fd1);
   close(fd2);
   shutdown(fd1,0);
