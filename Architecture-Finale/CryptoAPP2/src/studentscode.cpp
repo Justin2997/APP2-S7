@@ -44,17 +44,101 @@ using namespace std;
 // Remplacez ici le code source de cette fonction par le code de votre méthode
 // servant à encrypter le fichier. Celle ci devra encrypter "OverusedJoke.mp4" dans un fichier avec le même nom.
 void encrypt (int from) {
+	AutoSeededRandomPool prng;
+	byte key[ AES::DEFAULT_KEYLENGTH ]; // The default key length in Crypto++ is 16 bytes and specified by AES::DEFAULT_KEYLENGTH.
+	prng.GenerateBlock( key, sizeof(key) );
+
+	byte iv[ AES::BLOCKSIZE ]; // AES::BLOCKSIZE. For AES, this is always 16 bytes.
+	prng.GenerateBlock( iv, sizeof(iv) );    
+
+	const int TAG_SIZE = 12;
+
+	GCM<AES>::Encryption gcm;
+
+	// Plain text
+	string pdata;
+
+	// Encrypted, with Tag
+	string cipher, encoded;
+
+	// Recovered plain text
+	string rpdata;
+
+	/*********************************\
+	\*********************************/
+
+	// Pretty print
+	encoded.clear();
+	StringSource( key, sizeof(key), true,
+			new HexEncoder(
+					new StringSink( encoded )
+			) 
+	);
+	cout << "key: " << encoded << endl;
+
+	// Pretty print
+	encoded.clear();
+	StringSource( iv, sizeof(iv), true,
+			new HexEncoder(
+					new StringSink( encoded )
+			) 
+	); 
+	cout << " iv: " << encoded << endl;
+	cout << endl;
+
+	/*********************************\
+	\*********************************/
+	
 	// Read the file (https://www.thinkage.ca/gcos/expl/c/lib/read.html and https://www.ibm.com/support/knowledgecenter/en/SSLTBW_2.4.0/com.ibm.zos.v2r4.bpxbd00/rtrea.htm)
 	int ret;
-	char buf[1024];
-	printf("Reading the file\n");
-	while ((ret = read(from, buf, sizeof(buf)-1)) > 0) {
-		buf[ret] = 0x00;
+	char buffer[AES::DEFAULT_KEYLENGTH];
+	printf("Reading the file...\n");
+
+	while ((ret = read(from, buffer, sizeof(buffer))) > 0) {
+		string pdata = buffer;
+		// cout << "Donnée du fichier : " << s << endl;
 
 		// Encrypted block from https://www.cryptopp.com/wiki/GCM_Mode
+		/*********************************\
+		\*********************************/
+			try
+			{
+				gcm.SetKeyWithIV( key, sizeof(key), iv, sizeof(iv) );
+				gcm.SpecifyDataLengths( 0, pdata.size(), 0 );
+				StringSource( pdata, true,
+						new AuthenticatedEncryptionFilter( gcm,
+								new StringSink( cipher ), false, TAG_SIZE
+						)
+				);
+			}
+			catch( CryptoPP::InvalidArgument& e )
+			{
+					cerr << "Caught InvalidArgument..." << endl;
+					cerr << e.what() << endl;
+					cerr << endl;
+			}
+			catch( CryptoPP::Exception& e )
+			{
+					cerr << "Caught Exception..." << endl;
+					cerr << e.what() << endl;
+					cerr << endl;
+			}
+		/*********************************\
+    \*********************************/
 
+		/*********************************\
+    \*********************************/
 
-
+    // Pretty print
+    encoded.clear();
+    StringSource( cipher, true,
+        new HexEncoder(
+            new StringSink( encoded )
+        ) 
+    ); 
+    //cout << "Block encrypté : " << encoded << endl;
+    /*********************************\
+    \*********************************/
 	}
   cout << "Ce message ne doit s'afficher que du côté serveur" << endl;
 }
