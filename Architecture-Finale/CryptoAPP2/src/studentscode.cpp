@@ -1,9 +1,42 @@
 #include "studentscode.h"
-#include <iostream>
-#include <string>
+
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdio.h>
+
+#include <iostream>
+using std::cout;
+using std::cerr;
+
+#include <string>
+using std::string;
+
+#include "cryptopp/hex.h"
+using CryptoPP::HexEncoder;
+using CryptoPP::HexDecoder;
+
+#include "cryptopp/osrng.h"
+using CryptoPP::AutoSeededRandomPool;
+
+#include "cryptopp/cryptlib.h"
+using CryptoPP::BufferedTransformation;
+using CryptoPP::AuthenticatedSymmetricCipher;
+
+#include "cryptopp/filters.h"
+using CryptoPP::Redirector;
+using CryptoPP::StringSink;
+using CryptoPP::StringSource;
+using CryptoPP::AuthenticatedEncryptionFilter;
+using CryptoPP::AuthenticatedDecryptionFilter;
+
+#include "cryptopp/aes.h"
+using CryptoPP::AES;
+
+#include "cryptopp/gcm.h"
+using CryptoPP::GCM;
+
+#include "assert.h"
+
 #include "cryptopp/integer.h"
 using namespace CryptoPP;
 using namespace std;
@@ -11,7 +44,6 @@ using namespace std;
 // Remplacez ici le code source de cette fonction par le code de votre méthode
 // servant à encrypter le fichier. Celle ci devra encrypter "OverusedJoke.mp4" dans un fichier avec le même nom.
 void encrypt (int from) {
-
 	// Read the file (https://www.thinkage.ca/gcos/expl/c/lib/read.html and https://www.ibm.com/support/knowledgecenter/en/SSLTBW_2.4.0/com.ibm.zos.v2r4.bpxbd00/rtrea.htm)
 	int ret;
 	char buf[1024];
@@ -19,8 +51,10 @@ void encrypt (int from) {
 	while ((ret = read(from, buf, sizeof(buf)-1)) > 0) {
 		buf[ret] = 0x00;
 
-		// Encrypted block
-		//printf("Encrypted the block \n");
+		// Encrypted block from https://www.cryptopp.com/wiki/GCM_Mode
+
+
+
 	}
   cout << "Ce message ne doit s'afficher que du côté serveur" << endl;
 }

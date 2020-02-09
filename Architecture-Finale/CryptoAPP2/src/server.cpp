@@ -56,10 +56,10 @@ int main(){
   }
 
   //Authentification null de connaissance serveur
-  printf("Authentification of the client\n");
-  while((n = read(fd2, buf, sizeof(buf))) != 0){
-    printf("Message: \n<%s>\n", buf);
-  }
+  //printf("Authentification of the client\n");
+  //while((n = read(fd2, buf, sizeof(buf))) != 0){
+  //  printf("Message: \n<%s>\n", buf);
+  //}
 
   int from;
   // Usefull doc : https://pubs.opengroup.org/onlinepubs/009695399/functions/open.html

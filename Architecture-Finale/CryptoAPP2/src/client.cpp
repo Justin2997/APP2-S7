@@ -72,8 +72,8 @@ int main(int argc, char *argv[]) {
   int rec;
 
   //Authentification null de connaissance client
-  printf("Authentification to the server\n");
-  authentification(fd);
+  //printf("Authentification to the server\n");
+  //authentification(fd);
 
   int to;
   to = creat("OverusedJokeRecu.mp4",0777);
