@@ -75,7 +75,7 @@ int main(){
   encrypt(from); // Ici il faut changer from directement dans le fichier pour être envouer dans le socket
 
   high_resolution_clock::time_point t4 = high_resolution_clock::now();
-  while((n=read(from,buf,sizeof(buf)))!=0){
+  while((n=read(from,buf,sizeof(buf))) > 0){
     s = write(fd2,buf,n);
     if(s<0){cout<<"error sending\n";return 0;}
   }

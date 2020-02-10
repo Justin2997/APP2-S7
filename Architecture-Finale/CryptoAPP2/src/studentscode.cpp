@@ -48,10 +48,10 @@ void encrypt (int from) {
 	byte key[ AES::MAX_KEYLENGTH ]; // The default key length in Crypto++ is 16 bytes and specified by AES::DEFAULT_KEYLENGTH.
 	prng.GenerateBlock( key, sizeof(key) );
 
-	byte iv[ AES::BLOCKSIZE ]; // AES::BLOCKSIZE. For AES, this is always 16 bytes.
+	byte iv[ AES::MAX_KEYLENGTH ]; // AES::BLOCKSIZE. For AES, this is always 16 bytes.
 	prng.GenerateBlock( iv, sizeof(iv) );
 
-	const int TAG_SIZE = 12;
+	const int TAG_SIZE = 256;
 
 	GCM<AES>::Encryption gcm;
 
@@ -60,9 +60,18 @@ void encrypt (int from) {
 
 	// Encrypted, with Tag
 	string cipher, encoded;
+	AuthenticatedEncryptionFilter finalMessage(
+		gcm, new StringSink(cipher)
+	);
 
 	// Recovered plain text
 	string rpdata;
+
+	int to;
+  to = creat("OverusedJokeRecu_encrypted.mp4", 0777);
+  if(to < 0){
+    cout << "Error creating destination file\n";
+  }
 
 	/*********************************\
 	\*********************************/
@@ -90,70 +99,29 @@ void encrypt (int from) {
 	\*********************************/
 
 	// Read the file (https://www.thinkage.ca/gcos/expl/c/lib/read.html and https://www.ibm.com/support/knowledgecenter/en/SSLTBW_2.4.0/com.ibm.zos.v2r4.bpxbd00/rtrea.htm)
-	int ret;
-	int i = 1;
-	char buffer[AES::MAX_KEYLENGTH];
+	int ret, w;
+	int i = 0;
+	char buffer[256];
+
+	gcm.SetKeyWithIV( key, sizeof(key), iv, sizeof(iv) );
+	gcm.SpecifyDataLengths( 0, pdata.size(), 0 );
 	printf("Reading the file...\n");
 
-	while ((ret = read(from, buffer, AES::MAX_KEYLENGTH)) != 0) {
-		string pdata = buffer;
-		cout << "Itération : " << i++ << endl;
-
-		// Encrypted block from https://www.cryptopp.com/wiki/GCM_Mode
-		/*********************************\
-		\*********************************/
-			try
-			{
-				gcm.SetKeyWithIV( key, sizeof(key), iv, sizeof(iv) );
-				gcm.SpecifyDataLengths( 0, pdata.size(), 0 );
-				StringSource( pdata, true,
-						new AuthenticatedEncryptionFilter( gcm,
-								new StringSink( cipher ), false, TAG_SIZE
-						)
-				);
-			}
-			catch( CryptoPP::InvalidArgument& e )
-			{
-					cerr << "Caught InvalidArgument..." << endl;
-					cerr << e.what() << endl;
-					cerr << endl;
-			}
-			catch( CryptoPP::Exception& e )
-			{
-					cerr << "Caught Exception..." << endl;
-					cerr << e.what() << endl;
-					cerr << endl;
-			}
-		/*********************************\
-    \*********************************/
-
-		/*********************************\
-    \*********************************/
-
-    // Pretty print
-    /*encoded.clear();
-    StringSource( cipher, true,
-        new HexEncoder(
-            new StringSink( encoded )
-        )
-    );*/
-    //cout << "Block encrypté : " << encoded << endl;
-    /*********************************\
-    \*********************************/
+	while ((ret = read(from, buffer, 256)) > 0) {
+		finalMessage.Put((const byte*) &buffer, ret);
 	}
+
+	w = write(to, cipher.c_str(), cipher.size());
   cout << "Ce message ne doit s'afficher que du côté serveur" << endl;
 }
 
 //Remplacez ici le code source de cette fonction par le code de votre méthode
 //servant à décrypter le fichier. Le nom du fichier reçu encrypte par le serveur est "OverusedJokeRecu.mp4".
 void decrypt (int to) {
-  Integer int_a ("2121211212");
-	Integer int_b ("33");
-	Integer int_c ("754865");
-	for (int i = 0; i<10000; i++) {
-		a_exp_b_mod_c (int_a, int_b, int_c);
-	}
-  cout << "Cette fonction est une fonction simple effectuant 10 000 fois un a exp b mod c." << endl;
+
+	
+
+
   cout << "Ce message ne doit s'afficher que du côté client" << endl;
 }
 

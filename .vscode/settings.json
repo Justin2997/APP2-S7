@@ -1,6 +1,8 @@
 {
   "files.associations": {
     "chrono": "cpp",
-    "cstddef": "cpp"
+    "cstddef": "cpp",
+    "__node_handle": "cpp",
+    "string": "cpp"
   }
 }
