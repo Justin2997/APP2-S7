@@ -41,87 +41,65 @@ using CryptoPP::GCM;
 using namespace CryptoPP;
 using namespace std;
 
+string initial_key = "680B141334B5AF7925CCEB6C4F5BA81F82B6C4740F60DB7236F461D133CB8A31";
+string initial_iv  = "46420A4D0B9D8BAB480E25208834D670E1EAF3630A96347FC0FB8EEE9A3882F6";
+
+SecByteBlock key(reinterpret_cast<const byte*> (&initial_key[0]), initial_key.size());
+SecByteBlock iv(reinterpret_cast<const byte*> (&initial_iv[0]), initial_iv.size());
+
 // Remplacez ici le code source de cette fonction par le code de votre méthode
 // servant à encrypter le fichier. Celle ci devra encrypter "OverusedJoke.mp4" dans un fichier avec le même nom.
-void encrypt (int from) {
-	AutoSeededRandomPool prng;
-	byte key[ AES::MAX_KEYLENGTH ]; // The default key length in Crypto++ is 16 bytes and specified by AES::DEFAULT_KEYLENGTH.
-	prng.GenerateBlock( key, sizeof(key) );
-
-	byte iv[ AES::MAX_KEYLENGTH ]; // AES::BLOCKSIZE. For AES, this is always 16 bytes.
-	prng.GenerateBlock( iv, sizeof(iv) );
-
-	const int TAG_SIZE = 256;
+int encrypt (int from) {
+	cout << "Début de l'encryption" << endl;
+	int to, ret, w;
+	string cipher;
+	char buffer[256];
 
 	GCM<AES>::Encryption gcm;
-
-	// Plain text
-	string pdata;
-
-	// Encrypted, with Tag
-	string cipher, encoded;
 	AuthenticatedEncryptionFilter finalMessage(
 		gcm, new StringSink(cipher)
 	);
 
-	// Recovered plain text
-	string rpdata;
-
-	int to;
   to = creat("OverusedJokeRecu_encrypted.mp4", 0777);
-  if(to < 0){
-    cout << "Error creating destination file\n";
-  }
-
-	/*********************************\
-	\*********************************/
-
-	// Pretty print
-	encoded.clear();
-	StringSource( key, sizeof(key), true,
-			new HexEncoder(
-					new StringSink( encoded )
-			)
-	);
-	cout << "key: " << encoded << endl;
-
-	// Pretty print
-	encoded.clear();
-	StringSource( iv, sizeof(iv), true,
-			new HexEncoder(
-					new StringSink( encoded )
-			)
-	);
-	cout << " iv: " << encoded << endl;
-	cout << endl;
-
-	/*********************************\
-	\*********************************/
-
-	// Read the file (https://www.thinkage.ca/gcos/expl/c/lib/read.html and https://www.ibm.com/support/knowledgecenter/en/SSLTBW_2.4.0/com.ibm.zos.v2r4.bpxbd00/rtrea.htm)
-	int ret, w;
-	int i = 0;
-	char buffer[256];
+  if(to < 0){ cout << "Error creating destination file\n"; }
 
 	gcm.SetKeyWithIV( key, sizeof(key), iv, sizeof(iv) );
-	gcm.SpecifyDataLengths( 0, pdata.size(), 0 );
-	printf("Reading the file...\n");
-
-	while ((ret = read(from, buffer, 256)) > 0) {
+	while ((ret = read(from, buffer, 256)) != 0) {
 		finalMessage.Put((const byte*) &buffer, ret);
 	}
 
 	w = write(to, cipher.c_str(), cipher.size());
-  cout << "Ce message ne doit s'afficher que du côté serveur" << endl;
+  cout << "Message encrypté" << endl;
+	return open("OverusedJokeRecu_encrypted.mp4", O_RDONLY);
 }
 
 //Remplacez ici le code source de cette fonction par le code de votre méthode
 //servant à décrypter le fichier. Le nom du fichier reçu encrypte par le serveur est "OverusedJokeRecu.mp4".
-void decrypt (int to) {
+int decrypt (int to) {
+  cout << "Début de l'encryption" << endl;
+	int from, ret, w;
+	string cipher;
+	char buffer[256];
 
-	
+	GCM<AES>::Decryption gcm;
+	AuthenticatedDecryptionFilter finalMessage(
+		gcm, new StringSink(cipher)
+	);
 
+  from = creat("OverusedJokeRecu.mp4", 0777);
+  if(from < 0){ cout << "Error creating destination file\n"; }
 
-  cout << "Ce message ne doit s'afficher que du côté client" << endl;
+	gcm.SetKeyWithIV( key, sizeof(key), iv, sizeof(iv) );
+	while ((ret = read(to, buffer, 256)) != 0) {
+		finalMessage.Put((const byte*) &buffer, ret);
+	}
+
+	// On peut valider l'intégrier du message aussi avec c'est ligne vu que on utilise GCM
+	// bool b = finalMessage.GetLastResult();
+	// assert( true == b );
+
+	w = write(from, cipher.c_str(), cipher.size());
+  cout << "Message encrypté" << endl;
+	return open("OverusedJokeRecu.mp4", O_RDONLY);
 }
 

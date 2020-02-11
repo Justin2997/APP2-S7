@@ -76,7 +76,7 @@ int main(int argc, char *argv[]) {
   //authentification(fd);
 
   int to;
-  to = creat("OverusedJokeRecu.mp4",0777);
+  to = creat("OverusedJokeRecu_encrypted.mp4",0777);
   if(to<0){
     cout<<"Error creating destination file\n";
     return 0;
@@ -91,8 +91,11 @@ int main(int argc, char *argv[]) {
     }
     w=write(to,buf,rec);
   }
-  high_resolution_clock::time_point t3 = high_resolution_clock::now();
+  to = open("OverusedJokeRecu_encrypted.mp4", O_RDONLY);
+	if(to < 0){ cout << "Error creating to file\n"; }
 
+  high_resolution_clock::time_point t3 = high_resolution_clock::now();
+  
   decrypt(to);
 
   high_resolution_clock::time_point t4 = high_resolution_clock::now();

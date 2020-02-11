@@ -3,6 +3,7 @@
     "chrono": "cpp",
     "cstddef": "cpp",
     "__node_handle": "cpp",
-    "string": "cpp"
+    "string": "cpp",
+    "iosfwd": "cpp"
   }
 }

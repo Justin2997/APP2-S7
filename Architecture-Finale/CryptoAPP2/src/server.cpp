@@ -72,7 +72,7 @@ int main(){
   high_resolution_clock::time_point t1 = high_resolution_clock::now();
   high_resolution_clock::time_point t3 = high_resolution_clock::now();
 
-  encrypt(from); // Ici il faut changer from directement dans le fichier pour être envouer dans le socket
+  from = encrypt(from); // Ici il faut changer from directement dans le fichier pour être envouer dans le socket
 
   high_resolution_clock::time_point t4 = high_resolution_clock::now();
   while((n=read(from,buf,sizeof(buf))) > 0){
